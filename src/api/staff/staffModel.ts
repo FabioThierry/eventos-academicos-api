@@ -3,8 +3,8 @@ import { z } from "zod";
 
 extendZodWithOpenApi(z);
 
-export type Organizer = z.infer<typeof OrganizerSchema>;
-export const OrganizerSchema = z.object({
+export type Staff = z.infer<typeof StaffSchema>;
+export const StaffSchema = z.object({
   id: z.string().uuid(),
   name: z.string(),
   email: z.string().email(),

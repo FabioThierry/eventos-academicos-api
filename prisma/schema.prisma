@@ -43,7 +43,7 @@ model Certificate {
 }
 
 model Event {
-  id           Int            @id @default(1)
+  id           Int           @id @default(1)
   title        String
   description  String
   start_date   DateTime
@@ -55,13 +55,13 @@ model Event {
   neighborhood String
   Activity     Activity[]
   Frequency    Frequency[]
-  Organization Organization[]
+  Organization Staff[]
   Organizer    Organizer[]
   Participant  Participant[]
 }
 
 model Frequency {
-  id                          String       @id
+  id                          String      @id
   presence                    Boolean
   checked_by                  String
   observation                 String
@@ -69,8 +69,8 @@ model Frequency {
   confirmed                   Boolean
   eventId                     Int
   organizationId              String
-  Event                       Event        @relation(fields: [eventId], references: [id])
-  Organization                Organization @relation(fields: [organizationId], references: [id])
+  Event                       Event       @relation(fields: [eventId], references: [id])
+  Organization                Staff       @relation(fields: [organizationId], references: [id])
   Frequents                   Frequents[]
 }
 
@@ -93,7 +93,7 @@ model ModelCertificate {
   Certificate Certificate[]
 }
 
-model Organization {
+model Staff {
   id            String      @id
   name          String
   phone         String
@@ -109,9 +109,9 @@ model Organizer {
   eventId        Int
   activityId     Int
   organizationId String
-  Activity       Activity     @relation(fields: [activityId], references: [id])
-  Event          Event        @relation(fields: [eventId], references: [id])
-  Organization   Organization @relation(fields: [organizationId], references: [id])
+  Activity       Activity @relation(fields: [activityId], references: [id])
+  Event          Event    @relation(fields: [eventId], references: [id])
+  Organization   Staff    @relation(fields: [organizationId], references: [id])
 
   @@id([eventId, activityId, organizationId])
 }

@@ -56,7 +56,7 @@ enum EventEnum{
   ORGANIZATION
 }
 
-entity "Organizers" as ORG{
+entity "Staff-ORG" as ORG{
   *id: string
   name: string
   phone: string
