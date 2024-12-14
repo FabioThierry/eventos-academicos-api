@@ -96,8 +96,7 @@ model ModelCertificate {
 model Staff {
   id            String      @id
   name          String
-  phone         String
-  institution   String
+  email         String      @unique
   password_hash String
   eventId       Int
   Frequency     Frequency[]
