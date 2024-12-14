@@ -1,0 +1,173 @@
+generator client {
+  provider = "prisma-client-js"
+  seed     = "ts-node prisma/seed.ts"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Activity {
+  id               Int              @id @default(autoincrement())
+  name             String
+  description      String
+  type             String
+  workload         Int
+  requisiteId      Int
+  eventId          Int
+  Event            Event            @relation(fields: [eventId], references: [id])
+  ActivityRequisit ActivityRequisit @relation(fields: [requisiteId], references: [id])
+  Certificate      Certificate[]
+  Frequents        Frequents[]
+  Organizer        Organizer[]
+  Recive           Recive[]
+}
+
+model ActivityRequisit {
+  id       Int        @id @default(autoincrement())
+  name     String
+  Activity Activity[]
+}
+
+model Certificate {
+  id               Int              @id @default(autoincrement())
+  name             String
+  emissao_date     DateTime
+  modelId          Int
+  participantId    Int
+  activityId       Int
+  Activity         Activity         @relation(fields: [activityId], references: [id])
+  ModelCertificate ModelCertificate @relation(fields: [modelId], references: [id])
+  Participant      Participant      @relation(fields: [participantId], references: [id])
+}
+
+model Event {
+  id           Int            @id @default(1)
+  title        String
+  description  String
+  start_date   DateTime
+  end_date     DateTime
+  cidade       String
+  square       String
+  reference    String
+  cep          String
+  neighborhood String
+  Activity     Activity[]
+  Frequency    Frequency[]
+  Organization Organization[]
+  Organizer    Organizer[]
+  Participant  Participant[]
+}
+
+model Frequency {
+  id                          String       @id
+  presence                    Boolean
+  checked_by                  String
+  observation                 String
+  register_frequency_datetime DateTime
+  confirmed                   Boolean
+  eventId                     Int
+  organizationId              String
+  Event                       Event        @relation(fields: [eventId], references: [id])
+  Organization                Organization @relation(fields: [organizationId], references: [id])
+  Frequents                   Frequents[]
+}
+
+model Frequents {
+  participantId  Int
+  activityId     Int
+  frequencyId    String
+  confirmation   Boolean
+  confirmated_at DateTime?
+  Activity       Activity    @relation(fields: [activityId], references: [id])
+  Frequency      Frequency   @relation(fields: [frequencyId], references: [id])
+  Participant    Participant @relation(fields: [participantId], references: [id])
+
+  @@id([participantId, activityId, frequencyId])
+}
+
+model ModelCertificate {
+  id          Int           @id @default(autoincrement())
+  name        String
+  Certificate Certificate[]
+}
+
+model Organization {
+  id            String      @id
+  name          String
+  phone         String
+  institution   String
+  password_hash String
+  eventId       Int
+  Frequency     Frequency[]
+  Event         Event       @relation(fields: [eventId], references: [id])
+  Organizer     Organizer[]
+}
+
+model Organizer {
+  eventId        Int
+  activityId     Int
+  organizationId String
+  Activity       Activity     @relation(fields: [activityId], references: [id])
+  Event          Event        @relation(fields: [eventId], references: [id])
+  Organization   Organization @relation(fields: [organizationId], references: [id])
+
+  @@id([eventId, activityId, organizationId])
+}
+
+model Participant {
+  id                   Int           @id @default(autoincrement())
+  name                 String
+  description          String
+  email                String        @unique
+  phone                String
+  institution          String
+  education_lvl        EducationEnum
+  state_lvl            StateEnum
+  event_lvl            EventEnum
+  inscription_id       Int
+  inscription_datetime DateTime
+  eventId              Int
+  Certificate          Certificate[]
+  Frequents            Frequents[]
+  Event                Event         @relation(fields: [eventId], references: [id])
+  Recive               Recive[]
+}
+
+model Recive {
+  participantId Int
+  activityId    Int
+  Activity      Activity    @relation(fields: [activityId], references: [id])
+  Participant   Participant @relation(fields: [participantId], references: [id])
+
+  @@id([participantId, activityId])
+}
+
+enum EducationEnum {
+  ELEMENTARY_COMPLETED
+  ELEMENTARY_INCOMPLETE
+  HIGH_SCHOOL_COMPLETED
+  HIGH_SCHOOL_INCOMPLETE
+  HIGHER_EDUCATION_COMPLETED
+  HIGHER_EDUCATION_INCOMPLETE
+  POSTGRADUATE_LATO_SENSU_COMPLETED
+  POSTGRADUATE_LATO_SENSU_INCOMPLETE
+  POSTGRADUATE_STRICTO_SENSU_MASTER_COMPLETED
+  POSTGRADUATE_STRICTO_SENSU_MASTER_INCOMPLETE
+  POSTGRADUATE_STRICTO_SENSU_DOCTORATE_COMPLETED
+  POSTGRADUATE_STRICTO_SENSU_DOCTORATE_INCOMPLETE
+}
+
+enum EventEnum {
+  SPEAKER
+  LISTENER
+  ORGANIZATION
+}
+
+enum StateEnum {
+  PROSPECT
+  REGISTERED
+  PARTICIPANT
+  EX_PARTICIPANT
+}
