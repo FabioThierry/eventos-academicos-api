@@ -1,0 +1,186 @@
+@startuml seminario
+
+skinparam linetype ortho
+entity "Event" as Event {
+  *id: string 
+  title: string
+  description: string
+  start_date: date
+  end_date: date
+  cidade: string
+  square: string
+  reference: string
+  cep: string
+  neighborhood: string
+}
+
+entity "Participant" as Participant {
+  *id: int 
+  name: string
+  description: string
+  email: string
+  phone: string
+  institution: string
+  education_lvl: EducationEnum
+  state_lvl: StateEnum
+  event_lvl: EventEnum
+  __
+  *event_id: <<FK>>
+  inscription_id: int
+  inscription_datetime: date 
+}
+
+enum EducationEnum{
+  ELEMENTARY_COMPLETED
+  ELEMENTARY_INCOMPLETE
+  HIGH_SCHOOL_COMPLETED
+  HIGH_SCHOOL_INCOMPLETE
+  HIGHER_EDUCATION_COMPLETED
+  HIGHER_EDUCATION_INCOMPLETE
+  POSTGRADUATE_LATO_SENSU_COMPLETED
+  POSTGRADUATE_LATO_SENSU_INCOMPLETE
+  POSTGRADUATE_STRICTO_SENSU_MASTER_COMPLETED
+  POSTGRADUATE_STRICTO_SENSU_MASTER_INCOMPLETE
+  POSTGRADUATE_STRICTO_SENSU_DOCTORATE_COMPLETED
+  POSTGRADUATE_STRICTO_SENSU_DOCTORATE_INCOMPLETE
+}
+enum StateEnum{
+  PROSPECT
+  REGISTERED
+  PARTICIPANT
+  EX_PARTICIPANT
+}
+enum EventEnum{
+  SPEAKER
+  LISTENER
+  ORGANIZATION
+}
+
+entity "Organization" as ORG{
+  *id: string
+  name: string
+  phone: string
+  institution: string
+  password_hash: string
+  __
+  *event_id: <<FK>>
+}
+
+entity "Frequency" as Frequency{
+  *id: string
+  presence: boolean
+  checked_by: string
+  observation: string
+  __
+  *event_id: <<FK>>
+  *organization_id: <<FK>>
+  register_frequency_datetime: date
+  confirmad: boolean
+}
+
+entity "Activity" as Activity{
+  *id: int
+  name: string
+  description: string
+  type: string
+  workload: int
+  __
+  *requesite_id: <<FK>>
+  *event_id:  <<FK>> 
+}
+
+entity "Activity Requisit" as ActivityRequisit{
+  *id: int
+  name: string
+}
+
+entity "Certificate" as Certificate{
+  *participant_activity_id: <<AK>> 
+  name: string
+  emissao_date: date
+  __
+  * model_id: <<FK>>
+}
+entity "Model Certificate" as ModelCertificate{
+  *id: int
+  name: string
+}
+
+
+
+
+
+entity "Organizer" as Organizer {
+  *event_id: <<FK>>
+  *activity_id: <<FK>>
+  *organization_id: <<FK>>
+}
+entity "Frequents" as Frequents {
+  *participant_id: <<FK>>
+  *activity_id: <<FK>>
+  *frequency_id: <<FK>>
+  confirmation: boolean
+  confirmated_at: datetime
+}
+entity "Recive" as Recive {
+  *participant_id: <<FK>>
+  *activity_id: <<FK>>
+}
+
+/'Event::id ||--|{ Participant::event_id
+Event::id ||--|{ Frequency::event_id
+Event::id ||--|{ Activity::event_id
+Event::id ||--|{ ORG::event_id
+Event::id ||--|{ Organizer::event_id
+
+Participant::id }|--|{ Frequents::participant_id
+Participant::id }|--|{ Recive::participant_id
+
+ORG::id }|--|{ Organizer::organization_id
+ORG::id ||--|{ Frequency::organization_id
+
+Frequency::id }|--|{ Frequents::frequency_id
+
+Activity::id }|--|{ Frequents::activity_id
+Activity::id }|--|{ Organizer::activity_id
+Activity::id }|--|{ Recive::activity_id
+
+ActivityRequisit::id ||--|| Activity::requesit_id
+ModelCertificate::id ||--|| Certificate::model_id
+
+Participant::id ||--|| Certificate::id_parti_ativ
+Activity::id ||--|| Certificate::id_parti_ativ'/
+
+EducationEnum .. Participant
+StateEnum .. Participant
+EventEnum .. Participant
+
+Event ||--|{ Participant
+Event ||--|{ Frequency
+Event ||--|{ Activity
+Event ||--|{ ORG
+Event ||--|{ Organizer
+
+Participant }|--|{ Frequents
+Participant }|--|{ Recive
+
+ORG }|--|{ Organizer
+ORG ||--|{ Frequency
+
+Frequency }|--|{ Frequents
+
+Activity }|--|{ Frequents
+Activity }|--|{ Organizer
+Activity }|--|{ Recive
+
+ActivityRequisit ||--|| Activity
+ModelCertificate ||--|| Certificate
+
+Participant ||--|| Certificate
+Activity ||--|| Certificate
+
+
+
+@enduml
+
+
