@@ -99,6 +99,8 @@ model Staff {
   email         String      @unique
   password_hash String
   eventId       Int
+  createdAt     DateTime
+  updatedAt     DateTime
   Frequency     Frequency[]
   Event         Event       @relation(fields: [eventId], references: [id])
   Organizer     Organizer[]
